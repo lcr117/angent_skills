@@ -1,0 +1,9 @@
+model = "gpt-test"
+
+[features]
+js_repl = false
+
+[desktop]
+theme = "system"
+
+
