@@ -1,0 +1,7 @@
+[features]
+js_repl = false
+
+[features]
+apps = true
+
+
