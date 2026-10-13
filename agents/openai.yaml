@@ -1,0 +1,8 @@
+interface:
+  display_name: "Configure Codex Clash Proxy"
+  short_description: "Route Windows Codex through Clash without TUN"
+  default_prompt: "Use $configure-codex-clash-proxy to diagnose and configure Codex to use my local Clash HTTP proxy without enabling TUN."
+
+policy:
+  allow_implicit_invocation: true
+
