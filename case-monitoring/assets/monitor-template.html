@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{案例名称}} · 状态</title>
+<style>
+  body{font-family:-apple-system,"Segoe UI","Microsoft YaHei",sans-serif;background:#fff;color:#333;max-width:640px;margin:0 auto;padding:16px;line-height:1.5}
+  h1{font-size:18px;margin:0 0 4px}
+  .sub{color:#888;font-size:13px;margin-bottom:16px}
+  .stage{display:flex;align-items:flex-start;margin:0;padding:10px 8px;border-radius:8px}
+  .num{flex:0 0 26px;height:26px;border-radius:50%;background:#eee;color:#888;font-size:13px;display:flex;align-items:center;justify-content:center;margin-right:10px;font-weight:600}
+  .stage.done .num{background:#2e7d32;color:#fff}
+  .stage.cur{background:#e8f1fb}
+  .stage.cur .num{background:#1565c0;color:#fff}
+  .name{font-size:14px;font-weight:600}
+  .desc{font-size:12px;color:#888}
+  .bar{height:6px;background:#e0e0e0;border-radius:3px;margin-top:6px;overflow:hidden}
+  .bar>i{display:block;height:100%;background:#1565c0;border-radius:3px}
+  .cards{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:16px 0}
+  .card{background:#f7f7f7;border-radius:8px;padding:10px 12px}
+  .card .k{font-size:12px;color:#888}
+  .card .v{font-size:17px;font-weight:700;margin-top:2px}
+  .ok{color:#2e7d32}
+  h2{font-size:14px;color:#666;margin:18px 0 8px}
+  .hist{font-size:12px;color:#666;list-style:none;padding:0;margin:0}
+  .hist li{padding:6px 8px;border-radius:6px;border-bottom:1px solid #f0f0f0}
+  .hist li.latest{background:#e8f5e9;font-weight:600;color:#333}
+</style>
+</head>
+<body>
+<h1>{{案例名称}}</h1>
+<div class="sub">{{当前状态}}｜{{关注范围}}｜更新于 {{更新时间及时区}}｜来源：{{状态来源}}</div>
+
+<!-- 按案例阶段数量复制或删减阶段块；done=已完成，cur=当前阶段。 -->
+<div class="stage done">
+  <div class="num">1</div>
+  <div style="flex:1">
+    <div class="name">{{阶段名称}}</div>
+    <div class="desc">{{阶段状态与关键结果}}</div>
+  </div>
+</div>
+<div class="stage cur">
+  <div class="num">2</div>
+  <div style="flex:1">
+    <div class="name">{{当前阶段名称}}</div>
+    <div class="desc">{{进度与阶段说明}}</div>
+    <div class="bar"><i style="width:{{进度百分比}}%"></i></div>
+  </div>
+</div>
+
+<div class="cards">
+  <div class="card"><div class="k">{{指标一名称}}</div><div class="v">{{指标一读数}}</div></div>
+  <div class="card"><div class="k">{{指标二名称}}</div><div class="v">{{指标二读数}}</div></div>
+  <div class="card"><div class="k">{{指标三名称}}</div><div class="v">{{指标三读数}}</div></div>
+  <div class="card"><div class="k">错误/告警</div><div class="v ok">{{告警状态}}</div></div>
+</div>
+
+<h2>监测历史</h2>
+<ul class="hist">
+  <li class="latest">{{最新记录时间}} ▶ {{最新状态、变化、关键读数与备注}}</li>
+  <li>{{上一条记录时间}} ▶ {{上一条已核实的记录}}</li>
+  <!-- 每次查询在列表最前方添加一条；保留既有历史。 -->
+</ul>
+</body>
+</html>
