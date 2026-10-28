@@ -23,6 +23,9 @@ foreach ($p in $packages) {
         InstallLocation=$p.InstallLocation;ExternalRootHint=$root
         BackgroundVerbs=$info.BackgroundVerbs;AllVerbs=$info.Verbs;BackgroundDllPaths=$info.BackgroundDllPaths
         IsMenuOnlySparseCandidate=$info.IsMenuOnlySparseCandidate
+        IsMenuOnlyCandidate=$info.IsMenuOnlyCandidate
+        ExtensionCategories=$info.ExtensionCategories
+        MenuDllPaths=$info.MenuDllPaths
     }
 }
 if ($inspectionFailures.Count) { throw ('Inventory incomplete; inspect the emitted InspectionError records. Unreadable packages: ' + ($inspectionFailures -join ', ')) }

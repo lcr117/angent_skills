@@ -28,6 +28,14 @@ function ConvertTo-MenuManifestInfo {
     $background = @($verbs | Where-Object { $_.Type -in @('Directory\Background', 'DesktopBackground') })
     $backgroundIds = @($background | ForEach-Object { $_.Clsid.Trim('{}').ToLowerInvariant() } | Sort-Object -Unique)
     $classes = @($Document.SelectNodes('//*[local-name()="ComServer"]//*[local-name()="Class"]'))
+    $menuIds = @($verbs | ForEach-Object { $_.Clsid.Trim('{}').ToLowerInvariant() } | Sort-Object -Unique)
+    $unresolvedMenu = @(foreach ($id in $menuIds) {
+        $matches = @($classes | Where-Object { $_.GetAttribute('Id').Trim('{}').ToLowerInvariant() -eq $id })
+        if (!$matches.Count -or @($matches | Where-Object { !$_.GetAttribute('Path') }).Count) { $id }
+    })
+    $menuDllPaths = @($classes | Where-Object {
+        $_.GetAttribute('Id').Trim('{}').ToLowerInvariant() -in $menuIds
+    } | ForEach-Object { $_.GetAttribute('Path') } | Where-Object { $_ } | Sort-Object -Unique)
     $unresolved = @(foreach ($id in $backgroundIds) {
         $matches = @($classes | Where-Object { $_.GetAttribute('Id').Trim('{}').ToLowerInvariant() -eq $id })
         if (!$matches.Count -or @($matches | Where-Object { !$_.GetAttribute('Path') }).Count) { $id }
@@ -48,17 +56,24 @@ function ConvertTo-MenuManifestInfo {
         BackgroundVerbs=$background
         BackgroundDllPaths=$dllPaths
         UnresolvedBackgroundClsids=$unresolved
+        MenuDllPaths=$menuDllPaths
+        UnresolvedMenuClsids=$unresolvedMenu
         ExtensionCategories=$categories
+        IsMenuOnlyCandidate=($null -ne $allowExternal -and $allowExternal.InnerText.Trim() -eq 'true' -and $verbs.Count -gt 0 -and $other.Count -eq 0)
         IsMenuOnlySparseCandidate=($null -ne $allowExternal -and $allowExternal.InnerText.Trim() -eq 'true' -and $background.Count -gt 0 -and $other.Count -eq 0)
     }
 }
 
 function Get-MenuExternalFiles {
-    param([Parameter(Mandatory)]$ManifestInfo, [Parameter(Mandatory)][string]$ExternalLocation)
+    param([Parameter(Mandatory)]$ManifestInfo, [Parameter(Mandatory)][string]$ExternalLocation,
+          [ValidateSet('Background','All')][string]$Surface='Background')
     $root = [IO.Path]::GetFullPath($ExternalLocation).TrimEnd('\') + '\'
-    if ($ManifestInfo.UnresolvedBackgroundClsids.Count) { throw 'Some background COM classes cannot be resolved to external DLLs. Investigate manually instead of unregistering.' }
-    if (!$ManifestInfo.BackgroundDllPaths.Count) { throw 'Cannot verify external background COM DLL paths. Investigate manually instead of unregistering.' }
-    foreach ($relative in $ManifestInfo.BackgroundDllPaths) {
+    $unresolved=$ManifestInfo.UnresolvedBackgroundClsids
+    $paths=$ManifestInfo.BackgroundDllPaths
+    if($Surface -eq 'All'){$unresolved=$ManifestInfo.UnresolvedMenuClsids;$paths=$ManifestInfo.MenuDllPaths}
+    if ($unresolved.Count) { throw 'Some selected menu COM classes cannot be resolved to external DLLs. Investigate manually instead of unregistering.' }
+    if (!$paths.Count) { throw 'Cannot verify selected menu COM DLL paths. Investigate manually instead of unregistering.' }
+    foreach ($relative in $paths) {
         $file = [IO.Path]::GetFullPath((Join-Path $root $relative))
         if (!$file.StartsWith($root, [StringComparison]::OrdinalIgnoreCase)) { throw 'Menu DLL escapes the verified external root.' }
         if (!(Test-Path -LiteralPath $file -PathType Leaf)) { throw "External menu DLL is missing: $file" }

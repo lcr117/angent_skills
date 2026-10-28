@@ -52,6 +52,10 @@ try {
     [IO.File]::WriteAllText($manifest, $xml.Replace('Directory\Background', 'Directory'))
     $fileOnly = Get-MenuManifestInfo -ManifestPath $manifest
     Check ($fileOnly.BackgroundVerbs.Count -eq 0) 'file wildcard and Directory do not imply desktop-background registration'
+    Check $fileOnly.IsMenuOnlyCandidate 'file-only sparse menu component remains eligible for explicit All surface'
+    Check (@(Get-MenuExternalFiles -ManifestInfo $fileOnly -ExternalLocation $temp -Surface All).Count -eq 1) 'verifies DLL paths for file-only components'
+    [IO.File]::WriteAllText($manifest, $xml.Replace('</Extensions>', '<d:Extension Category="windows.cloudFiles"/></Extensions>'))
+    Check (!(Get-MenuManifestInfo -ManifestPath $manifest).IsMenuOnlyCandidate) 'cloud-files integration prevents whole-package removal for all surfaces'
     [IO.File]::WriteAllText($manifest, $xml.Replace('</Extensions>', '<d:Extension Category="windows.startupTask"/></Extensions>'))
     Check (!(Get-MenuManifestInfo -ManifestPath $manifest).IsMenuOnlySparseCandidate) 'rejects packages with non-menu integration'
     [IO.File]::WriteAllText($manifest, $xml.Replace('<u:AllowExternalContent>true</u:AllowExternalContent>', ''))
