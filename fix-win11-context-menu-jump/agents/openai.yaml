@@ -1,0 +1,7 @@
+interface:
+  display_name: "Fix Windows 11 Context Menu Jump"
+  short_description: "Fix loading-row jumps while keeping the modern menu"
+  default_prompt: "Use $fix-win11-context-menu-jump to diagnose this PC's modern desktop right-click menu loading rows, identify its actual extensions, and apply a reversible repair while retaining the modern menu."
+
+policy:
+  allow_implicit_invocation: true
