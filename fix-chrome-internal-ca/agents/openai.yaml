@@ -1,0 +1,4 @@
+interface:
+  display_name: "修复 Chrome 内部 CA 证书信任"
+  short_description: "排查中石化等内网站点证书告警、重启复发与密码不填充，核验 CA 链并验证修复"
+  default_prompt: "使用 $fix-chrome-internal-ca 排查这台 Windows 电脑的 Chrome 内网证书警告和密码不填充，核验证书来源、部署范围并完成冷启动验证。"
